@@ -19,6 +19,21 @@ public class RegistrationService {
     private PasswordEncoder passwordEncoder;
 
     public void registerUser(RegistrationDto dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("Registration data must not be null");
+        }
+
+        String email = dto.getEmail();
+        if (email != null && userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalStateException("Email already exists");
+        }
+
+        String rawPassword = dto.getPassword();
+        // enforce a minimum password length of 4 characters for these tests
+        if (rawPassword == null || rawPassword.length() < 4) {
+            throw new IllegalArgumentException("Password must be at least 4 characters long");
+        }
+
         User user = UserFactory.createUser(dto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
