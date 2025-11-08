@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Home</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+
+<div style="background-color: #fff; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; text-align: center;">
+    <h2 style="color: #333;">Welcome to the Library System</h2>
+    <form th:action="@{/logout}" method="post" style="margin-top: 20px;">
+        <button type="submit" style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Logout</button>
+    </form>
+</div>
+
+</body>
+</html>

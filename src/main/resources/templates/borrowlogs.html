@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Borrow Logs | LibraryHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 text-gray-800">
+
+  <!-- Header -->
+  <header class="flex flex-col md:flex-row justify-between items-center p-4 max-w-7xl mx-auto gap-4">
+    <h1 class="text-3xl font-bold text-indigo-700">All Borrow Logs</h1>
+    <div class="flex gap-2">
+      <a th:href="@{/dashboard}" class="px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold hover:bg-indigo-600 transition flex items-center gap-1">
+        <i class="bi bi-arrow-left-circle"></i> Back to Dashboard
+      </a>
+      <a th:href="@{/facade}" class="px-4 py-2 rounded-lg bg-indigo-500 text-white font-semibold hover:bg-indigo-600 transition flex items-center gap-1">
+        <i class="bi bi-arrow-left-circle"></i> Back to Facade Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Borrow Logs Table -->
+  <main class="max-w-7xl mx-auto mt-6 bg-white/80 backdrop-blur-md shadow-lg rounded-2xl overflow-x-auto p-4">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-indigo-600 text-white">
+        <tr>
+          <th class="px-4 py-2 text-left">Book Title</th>
+          <th class="px-4 py-2 text-left">Borrower</th>
+          <th class="px-4 py-2 text-left">Borrow Date</th>
+          <th class="px-4 py-2 text-left">Due Date</th>
+          <th class="px-4 py-2 text-left">Status</th>
+          <th class="px-4 py-2 text-left">Late Fee ($)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr th:each="log : ${borrowLogs}" class="hover:bg-gray-50 align-middle">
+          <!-- Book Title -->
+          <td class="px-4 py-2" th:text="${log.book?.title}">Book Title</td>
+          
+          <!-- Borrower Information -->
+          <td class="px-4 py-2">
+            <div th:if="${log.borrower != null}">
+              <div class="font-medium" th:text="${log.borrower.name}">User Name</div>
+              <div class="text-sm text-gray-500" th:text="${log.borrower.email}">user@email.com</div>
+              <div class="text-xs text-gray-400" th:text="${log.borrower.role}">Role</div>
+            </div>
+            <div th:unless="${log.borrower != null}" class="text-gray-400 italic">
+              User not found
+            </div>
+          </td>
+          
+          <!-- Borrow Date -->
+          <td class="px-4 py-2" th:text="${#temporals.format(log.borrowDate, 'MMM dd, yyyy')}">Borrow Date</td>
+          
+          <!-- Due Date -->
+          <td class="px-4 py-2" th:text="${#temporals.format(log.returnDate, 'MMM dd, yyyy')}">Due Date</td>
+          
+          <!-- Status -->
+          <td class="px-4 py-2">
+            <span th:if="${log.returned}" class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+              Returned
+            </span>
+            <span th:unless="${log.returned}" 
+                  th:class="${lateFees.get(log) > 0 ? 'px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium' : 'px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium'}">
+              <span th:text="${lateFees.get(log) > 0 ? 'Overdue' : 'Borrowed'}"></span>
+            </span>
+          </td>
+          
+          <!-- Late Fee -->
+          <td class="px-4 py-2 font-medium" 
+              th:class="${lateFees.get(log) > 0 ? 'text-red-600' : 'text-green-600'}">
+            $<span th:text="${#numbers.formatDecimal(lateFees.get(log), 1, 2)}">0.00</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <!-- Empty State -->
+    <div th:if="${borrowLogs.empty}" class="text-center py-8 text-gray-500">
+      <i class="bi bi-inbox text-4xl mb-2"></i>
+      <p>No borrow logs found.</p>
+    </div>
+  </main>
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+</body>
+</html>
