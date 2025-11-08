@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Book | LibraryHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function toggleFields() {
+      const type = document.getElementById("type").value;
+      const fields = ["digitalAccessField","preservationField","inLibraryUseOnlyField","manuscriptField","originalLanguageField"];
+      fields.forEach(id => document.getElementById(id).classList.add('hidden'));
+      
+      if (type === 'GENERAL') {
+          document.getElementById('digitalAccessField').classList.remove('hidden');
+      } else if (type === 'RARE') {
+          document.getElementById('preservationField').classList.remove('hidden');
+          document.getElementById('inLibraryUseOnlyField').classList.remove('hidden');
+      } else if (type === 'ANCIENT') {
+          document.getElementById('manuscriptField').classList.remove('hidden');
+          document.getElementById('originalLanguageField').classList.remove('hidden');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('type').addEventListener('change', toggleFields);
+      toggleFields();
+    });
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center py-8">
+
+  <div class="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl p-8 w-full max-w-lg">
+    <h2 class="text-2xl font-bold text-indigo-700 text-center mb-6">Add New Book</h2>
+
+    <form th:action="@{/books/add}" th:object="${bookForm}" method="post" enctype="multipart/form-data" class="space-y-4">
+
+      <!-- Title -->
+      <div>
+        <label for="title" class="block font-semibold text-gray-700 mb-1">Title</label>
+        <input id="title" type="text" th:field="*{title}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+      </div>
+
+      <!-- Author -->
+      <div>
+        <label for="author" class="block font-semibold text-gray-700 mb-1">Author</label>
+        <input id="author" type="text" th:field="*{author}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+      </div>
+
+      <!-- ISBN -->
+      <div>
+        <label for="isbn" class="block font-semibold text-gray-700 mb-1">ISBN</label>
+        <input id="isbn" type="text" th:field="*{isbn}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+      </div>
+
+      <!-- Cover Image Upload -->
+      <div>
+        <label for="coverImage" class="block font-semibold text-gray-700 mb-1">Cover Image</label>
+        <input id="coverImage" type="file" name="coverImage" accept="image/*" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+        <p class="text-xs text-gray-500 mt-1">Supported formats: JPG, PNG, GIF. Optional.</p>
+      </div>
+
+      <!-- Section -->
+      <div>
+        <label for="section" class="block font-semibold text-gray-700 mb-1">Section</label>
+        <select id="section" th:field="*{section}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+          <option value="RESTRICTED">Restricted</option>
+          <option value="GENERAL">General</option>
+        </select>
+      </div>
+
+      <!-- Type -->
+      <div>
+        <label for="type" class="block font-semibold text-gray-700 mb-1">Type</label>
+        <select id="type" th:field="*{type}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+          <option value="GENERAL">General</option>
+          <option value="ANCIENT">Ancient Script</option>
+          <option value="RARE">Rare</option>
+        </select>
+      </div>
+
+      <!-- GENERAL: Digital Access -->
+      <div id="digitalAccessField" class="hidden">
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" id="digitalAccess" th:field="*{digitalAccess}" class="form-checkbox text-indigo-600">
+          <span class="text-gray-700 font-medium">Digital Access</span>
+        </label>
+      </div>
+
+      <!-- RARE: Preservation -->
+      <div id="preservationField" class="hidden">
+        <label for="preservationMethod" class="block font-semibold text-gray-700 mb-1">Preservation Method</label>
+        <select id="preservationMethod" th:field="*{preservationMethod}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+          <option value="">--Select Method--</option>
+          <option value="Temperature Controlled">Temperature Controlled</option>
+          <option value="Vacuum Sealed">Vacuum Sealed</option>
+          <option value="Lamination">Lamination</option>
+          <option value="Digital Archival">Digital Archival</option>
+        </select>
+      </div>
+
+      <div id="inLibraryUseOnlyField" class="hidden">
+        <label class="inline-flex items-center gap-2">
+          <input type="checkbox" id="inLibraryUseOnly" th:field="*{inLibraryUseOnly}" class="form-checkbox text-indigo-600" checked disabled>
+          <span class="text-gray-700 font-medium">In Library Use Only</span>
+        </label>
+      </div>
+
+      <!-- ANCIENT: Original Language -->
+      <div id="originalLanguageField" class="hidden">
+        <label for="originalLanguage" class="block font-semibold text-gray-700 mb-1">Original Language</label>
+        <input id="originalLanguage" type="text" th:field="*{originalLanguage}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+
+      <!-- ANCIENT: Manuscript File -->
+      <div id="manuscriptField" class="hidden">
+        <label for="manuscriptFile" class="block font-semibold text-gray-700 mb-1">Manuscript File</label>
+        <input id="manuscriptFile" type="file" name="manuscriptFile" class="w-full border border-gray-300 rounded-md p-2">
+      </div>
+
+      <!-- Status -->
+      <div>
+        <label for="status" class="block font-semibold text-gray-700 mb-1">Status</label>
+        <select id="status" th:field="*{status}" class="w-full border border-gray-300 rounded-md p-2 focus:ring-indigo-500 focus:border-indigo-500">
+          <option value="AVAILABLE">Available</option>
+          <option value="BORROWED">Borrowed</option>
+          <option value="RESERVED">Reserved</option>
+          <option value="RESTORATION_NEEDED">Restoration Needed</option>
+        </select>
+      </div>
+
+      <div class="text-center mt-4">
+        <button type="submit" class="bg-indigo-600 text-white font-semibold px-6 py-2 rounded-lg hover:bg-indigo-700 transition">Add Book</button>
+      </div>
+
+    </form>
+
+    <div class="text-center mt-4">
+      <a th:href="@{/dashboard}" class="text-indigo-600 hover:underline">&larr; Back to Dashboard</a>
+    </div>
+  </div>
+
+</body>
+</html>

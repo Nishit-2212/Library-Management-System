@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Details | LibraryHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 text-gray-800 flex items-center justify-center p-4">
+
+  <div class="bg-white/90 backdrop-blur-md shadow-lg rounded-2xl max-w-md w-full p-6">
+    
+    <!-- Header -->
+    <div class="flex flex-col items-center mb-6">
+      <h1 class="text-2xl font-bold text-indigo-700 mb-4">Book Details</h1>
+      
+      <!-- Cover Image -->
+      <img th:if="${book.coverImagePath}" th:src="${book.coverImagePath}" alt="Cover Image"
+           class="w-32 h-44 object-cover rounded-lg border border-gray-300 shadow-sm mb-4">
+    </div>
+
+    <!-- Details -->
+    <div class="space-y-3 text-gray-700">
+      <p><span class="font-semibold text-gray-600">Title:</span> <span th:text="${book.title}">Book Title</span></p>
+      <p><span class="font-semibold text-gray-600">Author:</span> <span th:text="${book.author}">Author</span></p>
+      <p><span class="font-semibold text-gray-600">ISBN:</span> <span th:text="${book.isbn}">ISBN</span></p>
+      <p><span class="font-semibold text-gray-600">Status:</span> 
+        <span th:text="${book.status} ? ${book.status} : 'AVAILABLE'" 
+              th:classappend="${book.status?.name() == 'BORROWED'} ? 'text-red-600 font-semibold' : 'text-green-600 font-semibold'">Status</span>
+      </p>
+      <p><span class="font-semibold text-gray-600">Section:</span> <span th:text="${book.section}">Section</span></p>
+
+      <div th:if="${bookType == 'GeneralBook'}">
+        <p><span class="font-semibold text-gray-600">Digital Access:</span> <span th:text="${book.digitalAccess}">true/false</span></p>
+      </div>
+
+      <div th:if="${bookType == 'RareBook'}">
+        <p><span class="font-semibold text-gray-600">Preservation:</span> <span th:text="${book.preservationMethod}">Method</span></p>
+        <p><span class="font-semibold text-gray-600">In-Library Use Only:</span> <span th:text="${book.inLibraryUseOnly}">true/false</span></p>
+      </div>
+
+      <div th:if="${bookType == 'AncientScript'}">
+        <p><span class="font-semibold text-gray-600">Original Language:</span> <span th:text="${book.originalLanguage}">Language</span></p>
+        <p><span class="font-semibold text-gray-600">Translation Notes:</span> <span th:text="${book.translationNotes}">Notes</span></p>
+        <p><span class="font-semibold text-gray-600">Archived:</span> <span th:text="${book.archived}">true/false</span></p>
+      </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-6 text-center">
+      <a th:href="@{/dashboard}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">
+        <i class="bi bi-arrow-left-circle me-2"></i> Back to Dashboard
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+</body>
+</html>
