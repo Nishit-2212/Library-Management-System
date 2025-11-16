@@ -33,13 +33,18 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
 		String email = authentication.getName();
 		Optional<User> userOpt = userRepository.findByEmail(email);
 		userOpt.ifPresent(user -> emailService.sendLoginNotification(user.getEmail(), user.getName()));
+		
+		boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
 		boolean isLibrarian = authentication.getAuthorities().stream()
                 .anyMatch(role -> role.getAuthority().equals("ROLE_LIBRARIAN"));
 
-        if (isLibrarian) {
+        if (isAdmin) {
+            response.sendRedirect("/admin/dashboard");
+        } else if (isLibrarian) {
             response.sendRedirect("/facade");
         } else {
-            response.sendRedirect("/home");
+            response.sendRedirect("/dashboard");
         }
 
 	}

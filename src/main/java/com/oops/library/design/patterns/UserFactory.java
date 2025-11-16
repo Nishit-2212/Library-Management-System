@@ -9,6 +9,10 @@ public class UserFactory {
         String role = dto.getRole().toUpperCase();
 
         return switch (role) {
+            case "ADMIN" -> {
+                Admin admin = new Admin();
+                yield populateUserFields(admin, dto, Role.ADMIN);
+            }
             case "LIBRARIAN" -> {
                 Librarian librarian = new Librarian();
                 yield populateUserFields(librarian, dto, Role.LIBRARIAN);

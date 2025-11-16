@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .requestMatchers("/welcome","/signup", "/login", "/forgot-password", "/reset-password",
                         "/css/**", "/js/**", "/uploads/**").permitAll()
                 .requestMatchers("/books/add", "/books/edit/**", "/books/delete/**").hasRole("LIBRARIAN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated() // default to authenticated for all other requests
             )
             .formLogin(form -> form

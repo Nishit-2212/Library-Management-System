@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Enchanted Library</title>
+    <style>
+        .email-container { max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .email-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .email-content { background: #ffffff; padding: 40px; line-height: 1.6; color: #333; }
+        .email-footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .welcome-icon { text-align: center; font-size: 48px; margin: 20px 0; }
+        .button { display: inline-block; padding: 14px 35px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
+        .divider { height: 1px; background: #e0e0e0; margin: 25px 0; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Enchanted Library</h1>
+            <h2>Welcome to Our Community!</h2>
+        </div>
+        
+        <div class="email-content">
+            <div class="welcome-icon">📚✨</div>
+            
+            <h2>Hello <span th:text="${name}">Reader</span>,</h2>
+            
+            <p>Welcome to the Enchanted Library! Your account is now active and ready for magical adventures in reading.</p>
+            
+            <p>Start exploring our vast collection of magical books and resources today. Discover new worlds, learn ancient knowledge, and embark on literary journeys like never before.</p>
+            
+            <p style="text-align: center;">
+                <a th:href="${@environment.getProperty('app.base-url')}" class="button">Start Exploring</a>
+            </p>
+            
+            <div class="divider"></div>
+            
+            <h3>What you can do:</h3>
+            <ul>
+                <li>Browse our extensive collection of magical books</li>
+                <li>Borrow books with easy renewal options</li>
+                <li>Discover rare and ancient texts</li>
+                <li>Join our reading community</li>
+            </ul>
+        </div>
+        
+        <div class="email-footer">
+            <p>&copy; 2024 Enchanted Library. All rights reserved.</p>
+            <p>Happy Reading! 📖</p>
+        </div>
+    </div>
+</body>
+</html>

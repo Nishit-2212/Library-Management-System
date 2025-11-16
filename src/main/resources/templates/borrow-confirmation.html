@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Borrowed Successfully</title>
+    <style>
+        .email-container { max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .email-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .email-content { background: #ffffff; padding: 40px; line-height: 1.6; color: #333; }
+        .email-footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .book-icon { text-align: center; font-size: 48px; margin: 20px 0; }
+        .book-details { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .due-date { color: #dc3545; font-weight: bold; }
+        .divider { height: 1px; background: #e0e0e0; margin: 25px 0; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Enchanted Library</h1>
+            <h2>Book Borrowed Successfully</h2>
+        </div>
+        
+        <div class="email-content">
+            <div class="book-icon">📖</div>
+            
+            <h2>Hi <span th:text="${name}">Reader</span>,</h2>
+            
+            <p>Your book borrowing request has been processed successfully!</p>
+            
+            <div class="book-details">
+                <h3>Book Details:</h3>
+                <p><strong>Title:</strong> <span th:text="${bookTitle}">Book Title</span></p>
+                <p><strong>Due Date:</strong> <span class="due-date" th:text="${dueDate}">Due Date</span></p>
+            </div>
+            
+            <p>Please ensure you return the book by the due date.</p>
+            
+            <div class="divider"></div>
+            
+            <p style="color: #666; font-size: 14px;">
+                Need more time? You can renew your book online.
+            </p>
+        </div>
+        
+        <div class="email-footer">
+            <p>&copy; 2024 Enchanted Library. All rights reserved.</p>
+            <p>Happy Reading! ✨</p>
+        </div>
+    </div>
+</body>
+</html>

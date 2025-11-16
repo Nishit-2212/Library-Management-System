@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Alert</title>
+    <style>
+        .email-container { max-width: 600px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .email-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+        .email-content { background: #ffffff; padding: 40px; line-height: 1.6; color: #333; }
+        .email-footer { background: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+        .alert-icon { text-align: center; font-size: 48px; margin: 20px 0; }
+        .security-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        .button { display: inline-block; padding: 14px 35px; background: #dc3545; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; font-weight: 600; }
+        .divider { height: 1px; background: #e0e0e0; margin: 25px 0; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>Enchanted Library</h1>
+            <h2>Security Alert</h2>
+        </div>
+        
+        <div class="email-content">
+            <div class="alert-icon">🔒</div>
+            
+            <h2>Hi <span th:text="${name}">User</span>,</h2>
+            
+            <p>We detected a recent login to your Enchanted Library account.</p>
+            
+            <div class="security-box">
+                <strong>If this was you:</strong> You can safely ignore this message.
+                <br><br>
+                <strong>If this wasn't you:</strong> Please reset your password immediately.
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p style="color: #666; font-size: 14px;">
+                For your security, this alert is sent whenever your account is accessed.
+            </p>
+        </div>
+        
+        <div class="email-footer">
+            <p>&copy; 2024 Enchanted Library. All rights reserved.</p>
+            <p>Keeping your account secure is our priority.</p>
+        </div>
+    </div>
+</body>
+</html>
