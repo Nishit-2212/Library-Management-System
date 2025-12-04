@@ -1,8 +1,7 @@
 package com.oops.library.command;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import com.oops.library.design.patterns.CatalogManager;
 import com.oops.library.entity.Book;
 import com.oops.library.entity.BookStatus;
 import com.oops.library.entity.BorrowLog;
@@ -30,7 +29,7 @@ public class ReturnBookCommand implements Command {
     public void execute() {
         // Update borrow log
         borrowLog.setReturned(true);
-        borrowLog.setReturnDate(LocalDate.now());
+        borrowLog.setReturnDate(LocalDateTime.now());
         borrowLogRepository.save(borrowLog);
 
         // Update book status

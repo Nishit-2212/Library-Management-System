@@ -1,18 +1,19 @@
 package com.oops.library.strategy;
 
-import com.oops.library.entity.BorrowLog;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import com.oops.library.entity.BorrowLog;
 
 @Service
 public class LateFeeService {
     public double calculateLateFee(BorrowLog borrowLog) {
-        LocalDate today = LocalDate.now();
-        LocalDate returnDate = borrowLog.getReturnDate();
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime returnDate = borrowLog.getReturnDate();
 
-        if (today.isAfter(returnDate)) {
+        if (returnDate != null && today.isAfter(returnDate)) {
             long overdueDays = ChronoUnit.DAYS.between(returnDate, today);
             double lateFeeRate = borrowLog.getBook().getLateFeeRate();
             return overdueDays * lateFeeRate;

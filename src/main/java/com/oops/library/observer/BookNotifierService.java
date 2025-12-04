@@ -1,6 +1,7 @@
 package com.oops.library.observer;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class BookNotifierService {
 
     public void notifyAllOverdueBooks() {
         List<BorrowLog> overdueLogs = borrowLogRepository
-                .findByReturnedFalseAndReturnDateBefore(LocalDate.now());
+                .findByReturnedFalseAndReturnDateBefore(LocalDateTime.now());
 
         for (BorrowLog log : overdueLogs) {
             Book book = log.getBook();

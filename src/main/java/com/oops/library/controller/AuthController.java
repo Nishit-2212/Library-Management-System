@@ -2,9 +2,12 @@ package com.oops.library.controller;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -75,27 +78,36 @@ public class AuthController {
     private UserRepository userRepository;
     
     @Autowired
-    private Map<String,LendingStrategy> strategyMap;
+    private Map<String, LendingStrategy> strategyMap;
     
-   @Autowired
-   private BorrowLogRepository borrowLogRepository;
-   
-   @Autowired
-   private BookRepository bookRepository;
+    @Autowired
+    private BorrowLogRepository borrowLogRepository;
+    
+    @Autowired
+    private BookRepository bookRepository;
 
+    // Constructor with @Autowired annotation
+    @Autowired
     public AuthController(RegistrationService registrationService,
-                          BookRepository bookRepo,FacadeDashboard facadeDashboard,NotificationRepository notificationRepository,LibrarianNotifier librarianNotifier,UserInformationService userInfoService, FileStorageService fileStorageService, EmailService emailService) {
+                          BookRepository bookRepo, 
+                          FacadeDashboard facadeDashboard,
+                          NotificationRepository notificationRepository,
+                          LibrarianNotifier librarianNotifier,
+                          UserInformationService userInfoService, 
+                          FileStorageService fileStorageService, 
+                          EmailService emailService) {
         this.registrationService = registrationService;
         // bootstrap singleton with your JPA repository
         this.catalog = CatalogManager.getInstance(bookRepo);
-        this.facadeDashboard=facadeDashboard;
+        this.facadeDashboard = facadeDashboard;
         this.notificationRepository = notificationRepository;
-        this.librarianNotifier=librarianNotifier;
-        this.userInfoService=userInfoService;
+        this.librarianNotifier = librarianNotifier;
+        this.userInfoService = userInfoService;
         this.fileStorageService = fileStorageService;
         this.emailService = emailService;
     }
     
+   
     @GetMapping("/welcome")
     public String showLandingPage()
     {
@@ -135,41 +147,52 @@ public class AuthController {
         return "login";
     }
 
-    // --- DASHBOARD & BOOK CRUD ---
+ 
+    
 
-    /**
-     * Dashboard shows all books.
-     * Librarians get Add/Edit/Delete buttons;
-     * Scholars/Guests only see the list.
-     */
-//    @GetMapping({"/home", "/dashboard"})
-//    public String dashboard(Model model, Authentication auth) {
-//        List<Book> books = catalog.getAllBooks();
-//        boolean isLibrarian = auth.getAuthorities()
-//                .contains(new SimpleGrantedAuthority("ROLE_LIBRARIAN"));
-//        boolean isScholar=auth.getAuthorities()
-//                .contains(new SimpleGrantedAuthority("ROLE_SCHOLAR"));
-//        boolean isGuest=auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_GUEST"));
-//
-//        model.addAttribute("books", books);
-//        model.addAttribute("isLibrarian", isLibrarian);
-//        model.addAttribute("isScholar", isScholar);
-//        model.addAttribute("isGuest", isGuest);
-//        return "dashboard";
-//    }
     
     @GetMapping({"/home", "/dashboard"})
-    public String dashboard(Model model) {
+    public String dashboard(
+        @RequestParam(value = "author", required = false) String author,
+        @RequestParam(value = "title", required = false) String title,
+        Model model) {
+        
         try {
-            // Fetch all books from catalog
-            List<Book> books = catalog.getAllBooks();
+            List<Book> books;
+            boolean isSearch = false;
+            
+            // Check if search parameters are provided
+            if ((author != null && !author.trim().isEmpty()) || 
+                (title != null && !title.trim().isEmpty())) {
+                
+                // Perform search
+                books = searchBooks(author, title);
+                model.addAttribute("searchAuthor", author);
+                model.addAttribute("searchTitle", title);
+                isSearch = true;
+                
+                // Add search result message
+                if (books.isEmpty()) {
+                    model.addAttribute("searchMessage", 
+                        "No books found matching your search criteria.");
+                } else {
+                    model.addAttribute("searchMessage", 
+                        "Found " + books.size() + " book(s) matching your search.");
+                }
+                
+            } else {
+                // No search, show all books
+                books = catalog.getAllBooks();
+            }
+            
             model.addAttribute("books", books);
+            model.addAttribute("isSearch", isSearch);
 
             // Get logged-in user
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-                String email = auth.getName(); // assuming username is email
-                User loggedInUser = userInfoService.findByEmail(email); // fetch from DB
+                String email = auth.getName();
+                User loggedInUser = userInfoService.findByEmail(email);
                 model.addAttribute("loggedInUser", loggedInUser);
             }
 
@@ -186,10 +209,42 @@ public class AuthController {
             model.addAttribute("isGuest", isGuest);
 
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Error fetching books or user information.");
+            model.addAttribute("errorMessage", "Error fetching books: " + e.getMessage());
         }
 
         return "dashboard";
+    }
+
+    /**
+     * Search books by author and/or title
+     * Available to ALL users (Librarian, Scholar, Guest)
+     */
+    private List<Book> searchBooks(String author, String title) {
+        List<Book> allBooks = catalog.getAllBooks();
+        
+        if (allBooks == null || allBooks.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        return allBooks.stream()
+            .filter(book -> {
+                boolean matches = true;
+                
+                // Filter by author (case-insensitive, partial match)
+                if (author != null && !author.trim().isEmpty()) {
+                    String bookAuthor = book.getAuthor() != null ? book.getAuthor().toLowerCase() : "";
+                    matches = matches && bookAuthor.contains(author.trim().toLowerCase());
+                }
+                
+                // Filter by title (case-insensitive, partial match)
+                if (title != null && !title.trim().isEmpty()) {
+                    String bookTitle = book.getTitle() != null ? book.getTitle().toLowerCase() : "";
+                    matches = matches && bookTitle.contains(title.trim().toLowerCase());
+                }
+                
+                return matches;
+            })
+            .collect(Collectors.toList());
     }
 
 
@@ -373,53 +428,106 @@ public class AuthController {
         return "redirect:/dashboard";
     }
 
-//    @GetMapping("/facade")
-//    public String showDashboard(Model model)
-//    {
-//    	try
-//    	{
-//    		model.addAttribute("books", facadeDashboard.getBooksAndUsers().get("books"));
-//    		model.addAttribute("users",facadeDashboard.getBooksAndUsers().get("users"));
-//    	}
-//    	catch(EnchantedLibraryException e)
-//    	{
-//    		model.addAttribute("errorMessage", "Error fetching either books or users");
-//    	}
-//    	return "facade-dashboard";
-//    }
-    
-//    @GetMapping("/facade")
-//    public String showDashboard(Model model) {
-//        try {
-//            // Add users and books
-//            model.addAttribute("books", facadeDashboard.getBooksAndUsers().get("books"));
-//            model.addAttribute("users", facadeDashboard.getBooksAndUsers().get("users"));
-//
-//            // Add logged-in user
-//            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//            if (auth != null && auth.getPrincipal() instanceof User) {
-//                User loggedInUser = (User) auth.getPrincipal();
-//                model.addAttribute("loggedInUser", loggedInUser);
-//            }
-//
-//        } catch (EnchantedLibraryException e) {
-//            model.addAttribute("errorMessage", "Error fetching either books or users");
-//        }
-//        return "facade-dashboard";
-//    }
+
     
     @GetMapping("/facade")
-    public String showDashboard(Model model) {
+    public String showDashboard(
+        @RequestParam(value = "author", required = false) String author,
+        @RequestParam(value = "title", required = false) String title,
+        Model model) {
+        
         try {
-            // Add users and books
-            model.addAttribute("books", facadeDashboard.getBooksAndUsers().get("books"));
-            model.addAttribute("users", facadeDashboard.getBooksAndUsers().get("users"));
+            // Get all data from facade
+            Map<String, List<?>> collections = facadeDashboard.getBooksAndUsers();
+            List<Book> books = (List<Book>) collections.get("books");
+            List<User> users = (List<User>) collections.get("users");
+            
+            boolean isSearch = false;
+            List<Book> booksToDisplay = books;
+            
+            // Check if search parameters are provided
+            if ((author != null && !author.trim().isEmpty()) || 
+                (title != null && !title.trim().isEmpty())) {
+                
+                // Perform search on books
+                List<Book> filteredBooks = searchBooks(books, author, title);
+                model.addAttribute("searchAuthor", author);
+                model.addAttribute("searchTitle", title);
+                booksToDisplay = filteredBooks;
+                isSearch = true;
+                
+                // Add search result message
+                if (filteredBooks.isEmpty()) {
+                    model.addAttribute("searchMessage", 
+                        "No books found matching your search criteria.");
+                } else {
+                    model.addAttribute("searchMessage", 
+                        "Found " + filteredBooks.size() + " book(s) matching your search.");
+                }
+                
+            }
+            
+            // Calculate counts
+            int totalUsers = users != null ? users.size() : 0;
+            int librarianCount = 0;
+            int scholarCount = 0;
+            int guestCount=0;
+            
+            if (users != null) {
+                for (User user : users) {
+                    if ("LIBRARIAN".equals(user.getRole().name())) {
+                        librarianCount++;
+                    } else if ("SCHOLAR".equals(user.getRole().name())) {
+                        scholarCount++;
+                    }
+                    else if("GUEST".equals(user.getRole().name()))
+                    {
+                    	guestCount++;
+                    }
+                }
+            }
+            
+            int totalBooks = booksToDisplay != null ? booksToDisplay.size() : 0;
+            int availableCount = 0;
+            int borrowedCount = 0;
+            int repairCount = 0;
+            
+            if (booksToDisplay != null) {
+                for (Book book : booksToDisplay) {
+                    if (book.getStatus() != null) {
+                        switch (book.getStatus()) {
+                            case AVAILABLE:
+                                availableCount++;
+                                break;
+                            case BORROWED:
+                                borrowedCount++;
+                                break;
+                            case RESTORATION_NEEDED:
+                                repairCount++;
+                                break;
+                        }
+                    }
+                }
+            }
+            
+            // Add all attributes to model
+            model.addAttribute("books", booksToDisplay);
+            model.addAttribute("users", users);
+            model.addAttribute("isSearch", isSearch);
+            model.addAttribute("totalUsers", totalUsers);
+            model.addAttribute("librarianCount", librarianCount);
+            model.addAttribute("scholarCount", scholarCount);
+            model.addAttribute("totalBooks", totalBooks);
+            model.addAttribute("availableCount", availableCount);
+            model.addAttribute("borrowedCount", borrowedCount);
+            model.addAttribute("repairCount", repairCount);
+            model.addAttribute("guestCount",guestCount);
 
             // Fetch logged-in user from DB
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-                String email = auth.getName(); // username is email
-                User loggedInUser = userInfoService.findByEmail(email);// fetch from DB
+                String email = auth.getName();
+                User loggedInUser = userInfoService.findByEmail(email);
                 model.addAttribute("loggedInUser", loggedInUser);
             }
 
@@ -428,6 +536,35 @@ public class AuthController {
         }
 
         return "facade-dashboard";
+    }
+
+    /**
+     * Search books by author and/or title
+     */
+    private List<Book> searchBooks(List<Book> books, String author, String title) {
+        if (books == null || books.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
+        return books.stream()
+            .filter(book -> {
+                boolean matches = true;
+                
+                // Filter by author (case-insensitive, partial match)
+                if (author != null && !author.trim().isEmpty()) {
+                    String bookAuthor = book.getAuthor() != null ? book.getAuthor().toLowerCase() : "";
+                    matches = matches && bookAuthor.contains(author.trim().toLowerCase());
+                }
+                
+                // Filter by title (case-insensitive, partial match)
+                if (title != null && !title.trim().isEmpty()) {
+                    String bookTitle = book.getTitle() != null ? book.getTitle().toLowerCase() : "";
+                    matches = matches && bookTitle.contains(title.trim().toLowerCase());
+                }
+                
+                return matches;
+            })
+            .collect(Collectors.toList());
     }
 
 
@@ -464,9 +601,8 @@ public class AuthController {
         bookService.saveBook(book);
 
         // Create a new BorrowLog entry
-        LocalDate borrowDate = LocalDate.now();
-        LocalDate dueDate = strategy.calculateReturnDate(borrowDate);
-
+        LocalDateTime borrowDate = LocalDateTime.now();
+        LocalDateTime dueDate = strategy.calculateReturnDate(borrowDate);
         BorrowLog borrowLog = new BorrowLog();
         borrowLog.setBorrower(loggedInUser);
         borrowLog.setBook(book);
@@ -491,18 +627,9 @@ public class AuthController {
         if (!isLibrarian) {
             return "redirect:/dashboard";  // or an access-denied page
         }
-        try
-        {
-        	List<Book> books = bookService.getAllBooks(); // throws if empty
-            model.addAttribute("books", books);
-            return "book-status";  // new Thymeleaf template
-        }
-        catch(EnchantedLibraryException e)
-        {
-        	model.addAttribute("error", e.getMessage());
-        	return "book-status";
-
-        }
+        List<Book> books = bookService.getAllBooks(); // throws if empty
+		model.addAttribute("books", books);
+		return "book-status";  
         
     }
     
