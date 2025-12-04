@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Overdue Book Reminder</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f7f4;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 25px;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .alert-icon {
+            font-size: 48px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .book-list {
+            background: #fff5f5;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin: 20px 0;
+        }
+        .book-item {
+            padding: 10px;
+            border-bottom: 1px solid #ffe0e0;
+        }
+        .book-item:last-child {
+            border-bottom: none;
+        }
+        .late-fee {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #ffc107;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            color: #666;
+        }
+        .urgent {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 Overdue Book Reminder</h1>
+        <p>Enchanted Library</p>
+    </div>
+    
+    <div class="content">
+        <div class="alert-icon">⚠️</div>
+        
+        <p>Dear <span th:text="${userName}">Reader</span>,</p>
+        
+        <p>The following book(s) you borrowed from the Enchanted Library are <span class="urgent">OVERDUE</span>. 
+           Please return them as soon as possible.</p>
+        
+        <div class="book-list">
+            <h3>📖 Your Overdue Books:</h3>
+            <div th:each="log : ${overdueBooks}" class="book-item">
+                <strong th:text="${log.book.title}">Book Title</strong> 
+                by <span th:text="${log.book.author}">Author</span><br>
+                <small>
+                    Due: <span th:text="${#temporals.format(log.returnDate, 'MMM dd, yyyy \\'at\\' hh:mm a')}">Due Date</span> |
+                    Overdue: <span th:text="${#temporals.between(log.returnDate, now).days}">0</span> days
+                </small>
+            </div>
+        </div>
+        
+        <div class="late-fee">
+            <h3>💰 Total Late Fee Due: $<span th:text="${#numbers.formatDecimal(totalLateFee, 1, 2)}">0.00</span></h3>
+            <p>This amount will continue to increase until the books are returned.</p>
+        </div>
+        
+        <p><strong>🚀 What to do next:</strong></p>
+        <ul>
+            <li>Return the books during library operating hours</li>
+            <li>Contact us if you need to renew your borrowing period</li>
+            <li>If you've already returned the books, please notify us immediately</li>
+        </ul>
+        
+        <div class="footer">
+            <p>Thank you for your prompt attention to this matter.</p>
+            <p><strong>The Enchanted Library Team</strong></p>
+            <p style="font-size: 12px; margin-top: 10px;">
+                "Where every book holds a spell, and every reader is a wizard"<br>
+                <em>Generated on <span th:text="${currentDate}">date</span></em>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.oops.library.strategy;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 public class RestrictedReadingRoomStrategy implements LendingStrategy {
 
 	@Override
-	public LocalDate calculateReturnDate(LocalDate borrowDate) {
-		return borrowDate.plusDays(1);
+	public LocalDateTime calculateReturnDate(LocalDateTime borrowDate) {
+		return borrowDate.plusMinutes(30);
 	}
 
 }

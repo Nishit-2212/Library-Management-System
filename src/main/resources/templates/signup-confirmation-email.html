@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Welcome to the Enchanted Library</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f7f4;
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #8B4513, #D2691E);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .welcome-text {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .features {
+            background: #fffaf0;
+            padding: 20px;
+            border-left: 4px solid #D2691E;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0e6d2;
+            color: #666;
+        }
+        .magical-element {
+            color: #8B4513;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✨ Welcome to the Enchanted Library ✨</h1>
+    </div>
+    
+    <div class="content">
+        <p class="welcome-text">Dear <span th:text="${name}">Reader</span>,</p>
+        
+        <p>Your magical journey begins now! Your Enchanted Library account has been successfully activated.</p>
+        
+        <div class="features">
+            <h3>🌙 Discover Magical Features:</h3>
+            <ul>
+                <li>Explore our <span class="magical-element">ancient scripts</span> and rare books</li>
+                <li>Receive <span class="magical-element">notifications</span> for due dates</li>
+                <li>Access exclusive <span class="magical-element">content</span></li>
+            </ul>
+        </div>
+        
+        <p>Begin your adventure by browsing our collections and discovering stories that will transport you to other worlds.</p>
+        
+        <p><strong>Ready to explore?</strong> Visit the library today and let the magic begin!</p>
+        
+        <div class="footer">
+            <p>May your reading journey be filled with wonder and enchantment,</p>
+            <p><strong>LibraryHub Management Team</strong></p>
+            <p style="font-size: 12px; margin-top: 10px;">
+                "Where every book holds a spell, and every reader is a wizard"
+            </p>
+        </div>
+    </div>
+</body>
+</html>

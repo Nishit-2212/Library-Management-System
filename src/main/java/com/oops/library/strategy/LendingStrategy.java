@@ -1,8 +1,8 @@
 package com.oops.library.strategy;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface LendingStrategy {
 
-	LocalDate calculateReturnDate(LocalDate borrowDate);
+	LocalDateTime calculateReturnDate(LocalDateTime borrowDate);
 }

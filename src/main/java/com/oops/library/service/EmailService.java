@@ -3,6 +3,7 @@ package com.oops.library.service;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -80,11 +81,10 @@ public class EmailService {
         }
     }
 
-    // Add the same debug approach to other methods...
     public boolean sendSignupConfirmation(String recipient, String name) {
         log.info("=== STARTING SIGNUP CONFIRMATION EMAIL ===");
         
-        boolean templateTest = testTemplateProcessing("signup-confirmation", name);
+        boolean templateTest = testTemplateProcessing("signup-confirmation-email", name);
         if (!templateTest) {
             return sendSimpleMessage(recipient,
                     "Welcome to the Enchanted Library",
@@ -96,8 +96,8 @@ public class EmailService {
         variables.put("name", name);
         
         boolean htmlSent = sendTemplatedMessage(recipient,
-                "Welcome to the Enchanted Library",
-                "signup-confirmation",
+                "✨ Welcome to the Enchanted Library ✨",
+                "signup-confirmation-email",  // Updated template name
                 variables);
         
         if (!htmlSent) {
@@ -108,6 +108,7 @@ public class EmailService {
         }
         return true;
     }
+    
 
     public boolean sendPasswordResetOtp(String recipient, String otp) {
         boolean templateTest = testTemplateProcessing("password-reset-otp", "Test User");
@@ -145,7 +146,7 @@ public class EmailService {
         return true;
     }
 
-    public boolean sendBorrowConfirmation(String recipient, String name, String bookTitle, LocalDate dueDate) {
+    public boolean sendBorrowConfirmation(String recipient, String name, String bookTitle, LocalDateTime dueDate) {
         Map<String, Object> variables = new HashMap<>();
         variables.put("name", name);
         variables.put("bookTitle", bookTitle);
@@ -221,8 +222,8 @@ public class EmailService {
         log.info("Overdue summary sent: {} successful, {} failed", successCount, failureCount);
     }
 
-    // Enhanced templated message method with detailed debugging
-    private boolean sendTemplatedMessage(String recipient, String subject, String templateName, Map<String, Object> variables) {
+    // Enhanced template message method with detailed debugging
+    boolean sendTemplatedMessage(String recipient, String subject, String templateName, Map<String, Object> variables) {
         try {
             log.info("🔧 sendTemplatedMessage called for template: {}", templateName);
             
@@ -311,7 +312,7 @@ public class EmailService {
     }
 
     // ORIGINAL: Keep the existing simple message method unchanged
-    private boolean sendSimpleMessage(String recipient, String subject, String body) {
+    boolean sendSimpleMessage(String recipient, String subject, String body) {
         try {
             if (recipient == null || recipient.isBlank()) {
                 log.error("Attempted to send email with invalid recipient: '{}'", recipient);

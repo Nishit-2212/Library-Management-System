@@ -86,7 +86,6 @@ public abstract class Book {
 	public void setCoverImagePath(String coverImagePath) {
 		this.coverImagePath = coverImagePath;
 	}
-	
-	
+
 	
 }

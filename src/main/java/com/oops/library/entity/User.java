@@ -1,5 +1,7 @@
 package com.oops.library.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -27,6 +29,42 @@ public abstract class User {
     private String profileImagePath;
 	
 	public abstract String getType();
+	
+	// In User abstract class
+	@Column(name = "created_at")
+	private LocalDateTime createdAt;
+
+	@Column(name = "last_login_at")
+	private LocalDateTime lastLoginAt;
+
+	@Column(name = "is_active", nullable = false)
+	private boolean active = true;
+	
+	
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public LocalDateTime getLastLoginAt() {
+		return lastLoginAt;
+	}
+
+	public void setLastLoginAt(LocalDateTime lastLoginAt) {
+		this.lastLoginAt = lastLoginAt;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
 	public Long getId() {
 		return id;
